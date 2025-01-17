@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Text;
 using ProductLifecycleManagement.Models;
+using System.Security.Cryptography;
 
 
 namespace ProductLifecycleManagement.Services
@@ -33,20 +35,37 @@ namespace ProductLifecycleManagement.Services
         }
 
 
-        public void AddUser(User user)
+        public bool EmailExists(string email)
+        {
+            using (var connection = DatabaseHelper.GetConnection())
+            {
+                connection.Open();
+                var command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE Email=@Email", connection);
+                command.Parameters.AddWithValue("@Email", email);
+                int count = (int)command.ExecuteScalar();
+                return count > 0;
+            }
+        }
+
+        public int AddUser(User user)
         {
             using (var connection = DatabaseHelper.GetConnection())
             {
                 connection.Open();
                 var command = new SqlCommand(
-                    "INSERT INTO Users (Email, Name, Phone_Number, Password) VALUES (@Email, @Name, @PhoneNumber, @Password)", connection);
+                    "INSERT INTO Users (Email, Name, Phone_Number, Password) OUTPUT INSERTED.Id VALUES (@Email, @Name, @PhoneNumber, @Password)", connection);
                 command.Parameters.AddWithValue("@Email", user.Email);
                 command.Parameters.AddWithValue("@Name", user.Name);
                 command.Parameters.AddWithValue("@PhoneNumber", user.PhoneNumber);
-                command.Parameters.AddWithValue("@Password", user.Password); // Adăugat
-                command.ExecuteNonQuery();
+                command.Parameters.AddWithValue("@Password", user.Password);
+
+                // Obține ID-ul utilizatorului nou creat
+                int userId = (int)command.ExecuteScalar();
+                return userId;
             }
         }
+
+
 
 
         public void UpdateUser(User user)
@@ -79,13 +98,14 @@ namespace ProductLifecycleManagement.Services
 
         public User AuthenticateUser(string email, string password)
         {
+            string hashedPassword = HashPassword(password); // Hash password before checking
             using (var connection = DatabaseHelper.GetConnection())
             {
                 connection.Open();
                 var command = new SqlCommand(
                     "SELECT Id, Email, Name, Phone_Number, Password FROM Users WHERE Email=@Email AND Password=@Password", connection);
                 command.Parameters.AddWithValue("@Email", email);
-                command.Parameters.AddWithValue("@Password", password);
+                command.Parameters.AddWithValue("@Password", hashedPassword);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -103,6 +123,21 @@ namespace ProductLifecycleManagement.Services
             }
             return null;
         }
+
+        private string HashPassword(string password)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
+
 
 
         public bool IsAdmin(int userId)

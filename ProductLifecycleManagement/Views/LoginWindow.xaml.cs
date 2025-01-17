@@ -65,5 +65,12 @@ namespace ProductLifecycleManagement.Views
         {
             this.Close();
         }
+
+        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        {
+            var registerWindow = new RegisterWindow(); // Instanțiază fereastra Register
+            registerWindow.Show();
+            this.Close(); // Închide fereastra curentă
+        }
     }
 }

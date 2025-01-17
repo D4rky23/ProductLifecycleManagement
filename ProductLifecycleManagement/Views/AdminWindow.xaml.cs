@@ -1,64 +1,29 @@
 ﻿using System.Windows;
-using ProductLifecycleManagement.Services;
+using System.Windows.Input;
+using ProductLifecycleManagement.ViewModels;
 
 namespace ProductLifecycleManagement.Views
 {
     public partial class AdminWindow : Window
     {
-        private readonly ProductService _productService = new ProductService();
-        private readonly ProductStageHistoryService _historyService = new ProductStageHistoryService();
+        private readonly ProductViewModel _viewModel;
 
         public AdminWindow()
         {
             InitializeComponent();
+            _viewModel = new ProductViewModel();
+            DataContext = _viewModel;
             LoadProducts();
-            LoadHistory();
         }
 
         private void LoadProducts()
         {
-            ProductsGrid.ItemsSource = _productService.GetAllProducts();
+            // Obține lista de produse și actualizează ViewModel-ul
+            _viewModel.LoadAllProducts();
         }
-
-        private void LoadHistory()
-        {
-            HistoryGrid.ItemsSource = _historyService.GetAllHistories();
-        }
-
-     /*   private void AddProduct_Click(object sender, RoutedEventArgs e)
-        {
-            var addProductWindow = new AddProductWindow();
-            addProductWindow.ShowDialog();
-            LoadProducts();
-        } */
-
-    /*    private void EditProduct_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedProduct = ProductsGrid.SelectedItem as Models.Product;
-            if (selectedProduct != null)
-            {
-                var editProductWindow = new EditProductWindow(selectedProduct);
-                editProductWindow.ShowDialog();
-                LoadProducts();
-            }
-            else
-            {
-                MessageBox.Show("Please select a product to edit.");
-            }
-        } */
-
-        private void DeleteProduct_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedProduct = ProductsGrid.SelectedItem as Models.Product;
-            if (selectedProduct != null)
-            {
-                _productService.DeleteProduct(selectedProduct.Id);
-                LoadProducts();
-            }
-            else
-            {
-                MessageBox.Show("Please select a product to delete.");
-            }
+        private void LogoutCommand_Executed(object sender, ExecutedRoutedEventArgs e) 
+        { 
+            Application.Current.Shutdown(); 
         }
     }
 }

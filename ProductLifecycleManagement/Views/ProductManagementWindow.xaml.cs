@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using ProductLifecycleManagement.ViewModels;
 using ProductLifecycleManagement.Models;
 using ProductLifecycleManagement.Services;
@@ -14,7 +15,11 @@ namespace ProductLifecycleManagement.Views
             InitializeComponent();
             DataContext = new ProductViewModel();
             _productService = new ProductService();
+
+           
         }
+
+     
 
         private void AddProduct_Click(object sender, RoutedEventArgs e)
         {

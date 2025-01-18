@@ -69,18 +69,24 @@ namespace ProductLifecycleManagement.ViewModels
 
         private void AddProduct(object parameter)
         {
-            var newProduct = new Product
+            if (parameter is Product newProduct) // Verificăm dacă parametrul este de tip Product
             {
-                Name = "New Product",
-                Description = "Description",
-                EstimatedHeight = 0,
-                EstimatedWidth = 0,
-                EstimatedWeight = 0,
-                BOMId = 0
-            };
-            _productService.AddProduct(newProduct);
-            Products.Add(newProduct);
+                try
+                {
+                    _productService.AddProduct(newProduct); // Apelăm serviciul pentru a adăuga produsul în baza de date
+                    Products.Add(newProduct); // Adăugăm produsul în colecția locală
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Error adding product: {ex.Message}", ex); // Aruncăm eroarea pentru debugging
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Invalid parameter passed to AddProduct.");
+            }
         }
+
 
         private void EditProduct(object parameter)
         {

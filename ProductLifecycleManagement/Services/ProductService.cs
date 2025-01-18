@@ -23,7 +23,6 @@ namespace ProductLifecycleManagement.Services
                             Id = reader.GetInt32(0),
                             Name = reader.GetString(1),
                             Description = reader.GetString(2),
-                            // Folosește GetDecimal și convertește la float
                             EstimatedHeight = (float)reader.GetDecimal(3),
                             EstimatedWidth = (float)reader.GetDecimal(4),
                             EstimatedWeight = (float)reader.GetDecimal(5),
@@ -35,9 +34,13 @@ namespace ProductLifecycleManagement.Services
             return products;
         }
 
-
         public void AddProduct(Product product)
         {
+            if (!IsBOMIdValid(product.BOMId))
+            {
+                throw new Exception("Invalid BOM Id.");
+            }
+
             using (var connection = DatabaseHelper.GetConnection())
             {
                 connection.Open();
@@ -50,7 +53,14 @@ namespace ProductLifecycleManagement.Services
                 command.Parameters.AddWithValue("@Width", product.EstimatedWidth);
                 command.Parameters.AddWithValue("@Weight", product.EstimatedWeight);
                 command.Parameters.AddWithValue("@BOMId", product.BOMId);
-                command.ExecuteNonQuery();
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException ex) when (ex.Message.Contains("FK__Products__BOM_Id"))
+                {
+                    throw new Exception("There is already a product with the same BOM Id.", ex);
+                }
             }
         }
 
@@ -83,20 +93,38 @@ namespace ProductLifecycleManagement.Services
                 command.ExecuteNonQuery();
             }
         }
-        // Adăugarea metodei pentru validarea BOMId
-         public bool IsBOMIdValid(int bomId) 
+
+        public bool IsBOMIdValid(int bomId)
         {
             using (SqlConnection connection = DatabaseHelper.GetConnection())
             {
                 connection.Open();
+
+                // Verificăm dacă BOM ID există în tabela BOM
                 string query = "SELECT COUNT(*) FROM dbo.BOM WHERE Id = @BOMId";
                 using (SqlCommand command = new SqlCommand(query, connection))
-                { 
-                    command.Parameters.AddWithValue("@BOMId", bomId); 
-                    int count = (int)command.ExecuteScalar(); 
-                    return count > 0;
-                } 
-            } 
+                {
+                    command.Parameters.AddWithValue("@BOMId", bomId);
+                    int bomCount = (int)command.ExecuteScalar();
+
+                    // Dacă BOM ID nu există în tabelul BOM, returnăm false
+                    if (bomCount == 0)
+                    {
+                        return false;
+                    }
+                }
+
+                // Verificăm dacă BOM ID este deja asociat cu un produs
+                query = "SELECT COUNT(*) FROM dbo.Products WHERE BOM_Id = @BOMId";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@BOMId", bomId);
+                    int productCount = (int)command.ExecuteScalar();
+
+                    // Dacă BOM ID nu este asociat cu un produs, este valid
+                    return productCount == 0;
+                }
+            }
         }
 
     }

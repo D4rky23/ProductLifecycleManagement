@@ -127,6 +127,9 @@
                     <Button Content="Delete" Style="{StaticResource ModernButtonStyle}" Click="DeleteProduct_Click" Margin="5"/>
                     <Button Content="Clear" Style="{StaticResource ModernButtonStyle}" Click="ClearForm_Click" Margin="5"/>
                 </StackPanel>
+
+                <!-- Butonul Home mai mare și sub celelalte butoane -->
+                <Button Content="Home" Style="{StaticResource ModernButtonStyle}" Click="HomeButton_Click" Margin="5" FontSize="18" Padding="15,10"/>
             </StackPanel>
 
             <!-- DataGrid pentru produse -->

@@ -103,12 +103,12 @@
         <!-- Sidebar -->
         <StackPanel DockPanel.Dock="Left" Width="250" Background="#34495E">
             <StackPanel Margin="0,20">
-                <Button Content="🏠 Dashboard" Style="{StaticResource ModernButtonStyle}" Command="{Binding DashboardCommand}"/>
-                <Button Content="📋 Product Management" Style="{StaticResource ModernButtonStyle}" Command="{Binding ProductManagementCommand}"/>
-                <Button Content="📊 Reports" Style="{StaticResource ModernButtonStyle}" Command="{Binding ReportsCommand}"/>
-                <Button Content="⚙️ Settings" Style="{StaticResource ModernButtonStyle}" Command="{Binding SettingsCommand}"/>
-                <Button Content="❓ Help" Style="{StaticResource ModernButtonStyle}" Command="{Binding HelpCommand}"/>
-                <Button Content="🚪 Logout" Style="{StaticResource LogoutButtonStyle}" Command="{Binding LogoutCommand}"/>
+                <Button Content="🏠 Dashboard" Style="{StaticResource ModernButtonStyle}" Click="Dashboard_Click"/>
+                <Button Content="📋 Product Management" Style="{StaticResource ModernButtonStyle}" Click="ProductManagement_Click"/>
+                <Button Content="📊 Reports" Style="{StaticResource ModernButtonStyle}" Click="Reports_Click"/>
+                <Button Content="⚙️ Settings" Style="{StaticResource ModernButtonStyle}" Click="Settings_Click"/>
+                <Button Content="❓ Help" Style="{StaticResource ModernButtonStyle}" Click="Help_Click"/>
+                <Button Content="🚪 Logout" Style="{StaticResource LogoutButtonStyle}" Click="Logout_Click"/>
             </StackPanel>
         </StackPanel>
 

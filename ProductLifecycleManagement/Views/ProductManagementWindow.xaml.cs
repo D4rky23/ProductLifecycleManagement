@@ -3,6 +3,7 @@ using System.Windows;
 using ProductLifecycleManagement.ViewModels;
 using ProductLifecycleManagement.Models;
 using ProductLifecycleManagement.Services;
+using ProductLifecycleManagement.Views;
 
 namespace ProductLifecycleManagement.Views
 {
@@ -110,6 +111,14 @@ namespace ProductLifecycleManagement.Views
                 ClearForm();
                 MessageBox.Show("Product deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Go back to AdminWindow
+            var adminWindow = new AdminWindow();
+            adminWindow.Show();
+            this.Close();
         }
 
         private bool IsInputValid()

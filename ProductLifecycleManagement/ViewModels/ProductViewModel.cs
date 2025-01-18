@@ -1,23 +1,28 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Input;
-using ProductLifecycleManagement.Models;
+﻿using ProductLifecycleManagement.Models;
 using ProductLifecycleManagement.Services;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
+using System.Windows;
 using ProductLifecycleManagement.Views;
 
 namespace ProductLifecycleManagement.ViewModels
 {
-    public class ProductViewModel
+    public class ProductViewModel : ViewModelBase
     {
         private readonly ProductService _productService;
+        private Product _selectedProduct;
 
         // Constructor
         public ProductViewModel()
         {
             _productService = new ProductService();
             Products = new ObservableCollection<Product>();
+            LoadAllProducts();
 
             // Inițializare comenzi
+            AddProductCommand = new RelayCommand(AddProduct);
+            EditProductCommand = new RelayCommand(EditProduct);
+            DeleteProductCommand = new RelayCommand(DeleteProduct);
             DashboardCommand = new RelayCommand(OpenDashboard);
             ProductManagementCommand = new RelayCommand(OpenProductManagement);
             ReportsCommand = new RelayCommand(OpenReports);
@@ -29,7 +34,21 @@ namespace ProductLifecycleManagement.ViewModels
         // Colecția de produse
         public ObservableCollection<Product> Products { get; set; }
 
+        // Proprietatea SelectedProduct
+        public Product SelectedProduct
+        {
+            get => _selectedProduct;
+            set
+            {
+                _selectedProduct = value;
+                OnPropertyChanged(nameof(SelectedProduct));
+            }
+        }
+
         // Comenzi
+        public ICommand AddProductCommand { get; }
+        public ICommand EditProductCommand { get; }
+        public ICommand DeleteProductCommand { get; }
         public ICommand DashboardCommand { get; }
         public ICommand ProductManagementCommand { get; }
         public ICommand ReportsCommand { get; }
@@ -45,6 +64,43 @@ namespace ProductLifecycleManagement.ViewModels
             foreach (var product in products)
             {
                 Products.Add(product);
+            }
+        }
+
+        private void AddProduct(object parameter)
+        {
+            var newProduct = new Product
+            {
+                Name = "New Product",
+                Description = "Description",
+                EstimatedHeight = 0,
+                EstimatedWidth = 0,
+                EstimatedWeight = 0,
+                BOMId = 0
+            };
+            _productService.AddProduct(newProduct);
+            Products.Add(newProduct);
+        }
+
+        private void EditProduct(object parameter)
+        {
+            if (SelectedProduct != null)
+            {
+                _productService.UpdateProduct(SelectedProduct);
+                LoadAllProducts(); // Reîncărcare produse pentru a reflecta modificările
+            }
+        }
+
+        private void DeleteProduct(object parameter)
+        {
+            if (SelectedProduct != null)
+            {
+                MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete '{SelectedProduct.Name}'?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    _productService.DeleteProduct(SelectedProduct.Id);
+                    Products.Remove(SelectedProduct);
+                }
             }
         }
 
@@ -82,6 +138,22 @@ namespace ProductLifecycleManagement.ViewModels
         private void Logout(object parameter)
         {
             Application.Current.Shutdown(); // Închide aplicația
+        }
+
+        private bool IsProductUnique(Product product) 
+        {
+            foreach (var existingProduct in Products)
+            {
+                if (existingProduct.Name == product.Name || 
+                    existingProduct.Description == product.Description ||
+                    existingProduct.EstimatedHeight == product.EstimatedHeight ||
+                    existingProduct.EstimatedWidth == product.EstimatedWidth ||
+                    existingProduct.EstimatedWeight == product.EstimatedWeight || 
+                    existingProduct.BOMId == product.BOMId)
+                {
+                    return false;
+                } 
+            } return true; 
         }
     }
 }

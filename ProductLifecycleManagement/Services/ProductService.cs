@@ -83,5 +83,21 @@ namespace ProductLifecycleManagement.Services
                 command.ExecuteNonQuery();
             }
         }
+        // Adăugarea metodei pentru validarea BOMId
+         public bool IsBOMIdValid(int bomId) 
+        {
+            using (SqlConnection connection = DatabaseHelper.GetConnection())
+            {
+                connection.Open();
+                string query = "SELECT COUNT(*) FROM dbo.BOM WHERE Id = @BOMId";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                { 
+                    command.Parameters.AddWithValue("@BOMId", bomId); 
+                    int count = (int)command.ExecuteScalar(); 
+                    return count > 0;
+                } 
+            } 
+        }
+
     }
 }

@@ -125,6 +125,7 @@
                     <Button Content="Add" Style="{StaticResource ModernButtonStyle}" Click="AddProduct_Click" Margin="5"/>
                     <Button Content="Edit" Style="{StaticResource ModernButtonStyle}" Click="EditProduct_Click" Margin="5"/>
                     <Button Content="Delete" Style="{StaticResource ModernButtonStyle}" Click="DeleteProduct_Click" Margin="5"/>
+                    <Button Content="Clear" Style="{StaticResource ModernButtonStyle}" Click="ClearForm_Click" Margin="5"/>
                 </StackPanel>
             </StackPanel>
 
@@ -132,7 +133,8 @@
             <DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="True" Style="{StaticResource ModernDataGridStyle}"
                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                       Margin="0" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
-                      SelectedItem="{Binding SelectedProduct, Mode=TwoWay}" Grid.Column="1"/>
+                      SelectedItem="{Binding SelectedProduct, Mode=TwoWay}" Grid.Column="1"
+                      SelectionChanged="DataGrid_SelectionChanged"/>
         </Grid>
     </Grid>
 </Window>

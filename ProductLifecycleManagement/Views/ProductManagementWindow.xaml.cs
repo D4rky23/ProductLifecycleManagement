@@ -16,10 +16,28 @@ namespace ProductLifecycleManagement.Views
             DataContext = new ProductViewModel();
             _productService = new ProductService();
 
-           
+            // Event for selecting a product from DataGrid
+            ((ProductViewModel)DataContext).PropertyChanged += OnSelectedProductChanged;
         }
 
-     
+        private void OnSelectedProductChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ProductViewModel.SelectedProduct))
+            {
+                var viewModel = (ProductViewModel)DataContext;
+                var selectedProduct = viewModel.SelectedProduct;
+
+                if (selectedProduct != null)
+                {
+                    ProductNameTextBox.Text = selectedProduct.Name;
+                    ProductDescriptionTextBox.Text = selectedProduct.Description;
+                    ProductHeightTextBox.Text = selectedProduct.EstimatedHeight.ToString();
+                    ProductWidthTextBox.Text = selectedProduct.EstimatedWidth.ToString();
+                    ProductWeightTextBox.Text = selectedProduct.EstimatedWeight.ToString();
+                    ProductBOMIdTextBox.Text = selectedProduct.BOMId.ToString();
+                }
+            }
+        }
 
         private void AddProduct_Click(object sender, RoutedEventArgs e)
         {
@@ -44,6 +62,7 @@ namespace ProductLifecycleManagement.Views
                         {
                             viewModel.AddProductCommand.Execute(newProduct);
                             ClearForm();
+                            MessageBox.Show("Product added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         catch (Exception ex) when (ex.Message.Contains("There is already a product with the same BOM Id."))
                         {
@@ -74,28 +93,10 @@ namespace ProductLifecycleManagement.Views
                     viewModel.SelectedProduct.EstimatedHeight = float.Parse(ProductHeightTextBox.Text);
                     viewModel.SelectedProduct.EstimatedWidth = float.Parse(ProductWidthTextBox.Text);
                     viewModel.SelectedProduct.EstimatedWeight = float.Parse(ProductWeightTextBox.Text);
-                    viewModel.SelectedProduct.BOMId = int.Parse(ProductBOMIdTextBox.Text);
-
-                    if (_productService.IsBOMIdValid(viewModel.SelectedProduct.BOMId))
-                    {
-                        try
-                        {
-                            viewModel.EditProductCommand.Execute(viewModel.SelectedProduct);
-                            ClearForm();
-                        }
-                        catch (Exception ex) when (ex.Message.Contains("There is already a product with the same BOM Id."))
-                        {
-                            MessageBox.Show("A product with the same BOM Id already exists. Please use a different BOM Id.", "Duplicate BOM Id", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Error updating product: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Invalid BOM Id. Please enter a valid BOM Id.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    // BOM Id is not changed during editing
+                    viewModel.EditProductCommand.Execute(viewModel.SelectedProduct);
+                    ClearForm();
+                    MessageBox.Show("Product updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
         }
@@ -107,6 +108,7 @@ namespace ProductLifecycleManagement.Views
             {
                 viewModel.DeleteProductCommand.Execute(viewModel.SelectedProduct);
                 ClearForm();
+                MessageBox.Show("Product deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -159,6 +161,25 @@ namespace ProductLifecycleManagement.Views
             ProductWidthTextBox.Clear();
             ProductWeightTextBox.Clear();
             ProductBOMIdTextBox.Clear();
+        }
+
+        private void ClearForm_Click(object sender, RoutedEventArgs e)
+        {
+            ClearForm();
+        }
+
+        private void DataGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var viewModel = (ProductViewModel)DataContext;
+            if (viewModel != null && viewModel.SelectedProduct != null)
+            {
+                ProductNameTextBox.Text = viewModel.SelectedProduct.Name;
+                ProductDescriptionTextBox.Text = viewModel.SelectedProduct.Description;
+                ProductHeightTextBox.Text = viewModel.SelectedProduct.EstimatedHeight.ToString();
+                ProductWidthTextBox.Text = viewModel.SelectedProduct.EstimatedWidth.ToString();
+                ProductWeightTextBox.Text = viewModel.SelectedProduct.EstimatedWeight.ToString();
+                ProductBOMIdTextBox.Text = viewModel.SelectedProduct.BOMId.ToString();
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ namespace ProductLifecycleManagement.Views
         public DashboardWindow()
         {
             InitializeComponent();
+            // Aici putem încărca statisticile și alte date relevante
         }
     }
 }

@@ -2,9 +2,45 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Reports"
-        WindowStartupLocation="CenterScreen" Width="800" Height="600">
-    <Grid>
-        <TextBlock Text="Reports" FontSize="24" FontWeight="Bold"
-                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        WindowStartupLocation="CenterScreen" Width="1000" Height="800"
+        Background="#F4F4F9">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Background="#2C3E50" CornerRadius="10" Padding="10" Grid.Row="0">
+            <TextBlock Text="Reports" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,20,0,0">
+            <StackPanel Margin="10">
+                <!-- Secțiuni pentru generarea rapoartelor -->
+                <Border Background="White" CornerRadius="10" Padding="10" Margin="0,10">
+                    <StackPanel>
+                        <TextBlock Text="Generate Reports" FontSize="20" FontWeight="Bold" Foreground="#2C3E50"/>
+                        <Button Content="Generate Product Report" Background="#16A085" Foreground="White" FontSize="16" Padding="10" Margin="5,10,0,0" Click="GenerateProductReport_Click"/>
+                        <Button Content="Generate Stage Report" Background="#16A085" Foreground="White" FontSize="16" Padding="10" Margin="5,10,0,0" Click="GenerateStageReport_Click"/>
+                        <Button Content="Generate Material Report" Background="#16A085" Foreground="White" FontSize="16" Padding="10" Margin="5,10,0,0" Click="GenerateMaterialReport_Click"/>
+                        <Button Content="Generate BOM Report" Background="#16A085" Foreground="White" FontSize="16" Padding="10" Margin="5,10,0,0" Click="GenerateBOMReport_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Secțiune pentru afișarea rapoartelor generate -->
+                <Border Background="White" CornerRadius="10" Padding="10" Margin="0,10">
+                    <StackPanel>
+                        <TextBlock Text="Report Output" FontSize="20" FontWeight="Bold" Foreground="#2C3E50"/>
+                        <ListBox x:Name="ReportOutputListBox" Height="300"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Buton pentru generarea PDF-ului -->
+                <Button Content="Generate PDF" Background="#16A085" Foreground="White" FontSize="16" Padding="10" Margin="5,10,0,0" Click="GeneratePDF_Click"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Content="Home" Background="#16A085" Foreground="White" FontSize="16" Padding="10" Margin="0,10,0,0" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Click="HomeButton_Click"/>
     </Grid>
 </Window>
